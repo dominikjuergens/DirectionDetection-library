@@ -19,18 +19,13 @@ class Somda {
          * sensorEvent from the onSensorChanged function
          */
         fun doSomda(mSensorManager: SensorManager, sensorEventListener: SensorEventListener,
-                    event: SensorEvent): Int {
-            //register and start sensors
-            DirectionSensors.startSensorListener(mSensorManager, sensorEventListener)
+                    event: SensorEvent): Float {
             //get sensor values
             getSensorValues(event)
-
-
-            return 42
-        }
-
-        fun stopSomda(mSensorManager: SensorManager, sensorEventListener: SensorEventListener) {
-            DirectionSensors.stopSensorListener(mSensorManager, sensorEventListener)
+            //roll correction
+            val correctedAzimuth = rollCorrection()
+            //TODO windowed peak algorithm for further correction
+            return 42F
         }
 
         private fun getSensorValues(event: SensorEvent){
@@ -41,6 +36,28 @@ class Somda {
                 roll = orientations.third
             } else if(event.sensor.type == Sensor.TYPE_LINEAR_ACCELERATION) { //get linear z-Axis Acceleration
                 zAcc = DirectionSensors.getZAcceleration(event)
+            }
+        }
+
+        private fun rollCorrection(): Float {
+            if(pitch < 0) {
+                return (calculateAngle(azimuth + roll))
+            } else { // (pitch >= 0)
+                return (calculateAngle(azimuth - roll))
+            }
+        }
+
+        /**
+         * because angles can only be between 0 and 359, it has to be checked for undefined angles
+         * after the addition of two angles
+         */
+        private fun calculateAngle(angle: Float): Float {
+            if(angle >= 360) {
+                return (angle - 360)
+            } else if (angle < 0) {
+                return (angle + 360)
+            } else {
+                return angle
             }
         }
     }

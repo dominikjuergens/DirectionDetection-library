@@ -41,10 +41,10 @@ class DirectionSensors {
         /**
          * returns the three euler angles as a Triple
          * you need to input the event from the onSensorChanged function of the Fragment where the
-         * afunction is called
+         * function is called
          *
          * You have to differentiate between event types before calling getEulerAngles or
-         * getZAccelleration
+         * getZAcceleration
          */
         fun getEulerAngles(event: SensorEvent): Triple<Float, Float, Float> {
             if(rotVecSensor == null) {
