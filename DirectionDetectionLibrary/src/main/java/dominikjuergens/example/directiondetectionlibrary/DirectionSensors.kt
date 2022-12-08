@@ -46,10 +46,10 @@ class DirectionSensors {
          * You have to differentiate between event types before calling getEulerAngles or
          * getZAcceleration
          */
-        fun getEulerAngles(event: SensorEvent): Triple<Float, Float, Float> {
+        fun getEulerAngles(event: SensorEvent): EulerAngles {
             if(rotVecSensor == null) {
                 sensorNotInitialized()
-                return Triple(-1F, -1F, -1F)
+                return EulerAngles(-1F, -1F, -1F)
             }
             val rotMat = FloatArray(9)
             //Calculate the rotation matrix with the values from the event
@@ -64,7 +64,7 @@ class DirectionSensors {
             val roll = Math.toDegrees(orientation[2].toDouble()).toFloat()
 
             //return the three euler angles
-            return Triple(azimuth, pitch, roll)
+            return EulerAngles(azimuth, pitch, roll)
         }
 
         /**

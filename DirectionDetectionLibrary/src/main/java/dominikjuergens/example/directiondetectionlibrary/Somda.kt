@@ -10,6 +10,11 @@ class Somda(context: Context) {
 
     private var callback: SomdaListener? = null
 
+    private var azimuth: Float = 0F
+    private var pitch: Float = 0F
+    private var roll: Float = 0F
+    private var zAcc: Float = 0F
+
     fun start(onInteractionListener: SomdaListener) {
         callback = onInteractionListener
         // TODO do your lib stuff
@@ -25,11 +30,6 @@ class Somda(context: Context) {
         fun onSomdaChanged(degree: Float)
     }
 
-    private var azimuth: Float = 0F
-    private var pitch: Float = 0F
-    private var roll: Float = 0F
-    private var zAcc: Float = 0F
-
     /**
      * takes the fragments sensorManager, the fragment as the sensorEventListener and the
      * sensorEvent from the onSensorChanged function
@@ -37,19 +37,19 @@ class Somda(context: Context) {
     fun doSomdaAlgorithm(mSensorManager: SensorManager, sensorEventListener: SensorEventListener,
                 event: SensorEvent): Float {
         //get sensor values
-        getSensorValues(event)
+        refreshSensorValues(event)
         //roll correction
         val correctedAzimuth = rollCorrection()
         //TODO windowed peak algorithm for further correction
         return 42F
     }
 
-    private fun getSensorValues(event: SensorEvent){
+    private fun refreshSensorValues(event: SensorEvent){
         if(event.sensor.type == Sensor.TYPE_ROTATION_VECTOR) { //get euler angles
-            val orientations = DirectionSensors.getEulerAngles(event)
-            azimuth = orientations.first
-            pitch = orientations.second
-            roll = orientations.third
+            val eulerAngles = DirectionSensors.getEulerAngles(event)
+            azimuth = eulerAngles.azimuth
+            pitch = eulerAngles.pitch
+            roll = eulerAngles.roll
         } else if(event.sensor.type == Sensor.TYPE_LINEAR_ACCELERATION) { //get linear z-Axis Acceleration
             zAcc = DirectionSensors.getZAcceleration(event)
         }
@@ -68,12 +68,6 @@ class Somda(context: Context) {
      * after the addition of two angles
      */
     private fun calculateAngle(angle: Float): Float {
-        if(angle >= 360) {
-            return (angle - 360)
-        } else if (angle < 0) {
-            return (angle + 360)
-        } else {
-            return angle
-        }
+        return angle % 360
     }
 }
