@@ -6,9 +6,11 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 
-class Somda(context: Context) {
+class Somda(private val context: Context) {
 
     private var callback: SomdaListener? = null
+    private var sensorEventListener: SensorEventListener? = null
+    private var sensorManager: SensorManager? = null
 
     private var azimuth: Float = 0F
     private var pitch: Float = 0F
@@ -17,13 +19,34 @@ class Somda(context: Context) {
 
     fun start(onInteractionListener: SomdaListener) {
         callback = onInteractionListener
-        // TODO do your lib stuff
+        sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
+        // Create a SensorEventListener
+        sensorEventListener = object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent) {
+                doSomdaAlgorithm(event)
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
+                // Handle accuracy changes here
+            }
+        }
+
+        DirectionSensors.startSensorListener(
+            sensorManager!!, sensorEventListener as SensorEventListener
+        )
+
         callback?.onSomdaChanged(42.0F)
     }
 
     fun stop() {
+        DirectionSensors.stopSensorListener(
+            sensorManager!!,
+            sensorEventListener as SensorEventListener
+        )
         callback = null
-        // TODO stop your lib stuff
+        sensorManager = null
+        sensorEventListener = null
     }
 
     interface SomdaListener {
@@ -34,8 +57,7 @@ class Somda(context: Context) {
      * takes the fragments sensorManager, the fragment as the sensorEventListener and the
      * sensorEvent from the onSensorChanged function
      */
-    fun doSomdaAlgorithm(mSensorManager: SensorManager, sensorEventListener: SensorEventListener,
-                event: SensorEvent): Float {
+    fun doSomdaAlgorithm(event: SensorEvent): Float {
         //get sensor values
         refreshSensorValues(event)
         //roll correction
@@ -44,19 +66,19 @@ class Somda(context: Context) {
         return 42F
     }
 
-    private fun refreshSensorValues(event: SensorEvent){
-        if(event.sensor.type == Sensor.TYPE_ROTATION_VECTOR) { //get euler angles
+    private fun refreshSensorValues(event: SensorEvent) {
+        if (event.sensor.type == Sensor.TYPE_ROTATION_VECTOR) { //get euler angles
             val eulerAngles = DirectionSensors.getEulerAngles(event)
             azimuth = eulerAngles.azimuth
             pitch = eulerAngles.pitch
             roll = eulerAngles.roll
-        } else if(event.sensor.type == Sensor.TYPE_LINEAR_ACCELERATION) { //get linear z-Axis Acceleration
+        } else if (event.sensor.type == Sensor.TYPE_LINEAR_ACCELERATION) { //get linear z-Axis Acceleration
             zAcc = DirectionSensors.getZAcceleration(event)
         }
     }
 
     private fun rollCorrection(): Float {
-        if(pitch < 0) {
+        if (pitch < 0) {
             return (calculateAngle(azimuth + roll))
         } else { // (pitch >= 0)
             return (calculateAngle(azimuth - roll))
