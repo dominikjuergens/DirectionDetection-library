@@ -24,7 +24,8 @@ class Somda(private val context: Context) {
         // Create a SensorEventListener
         sensorEventListener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent) {
-                doSomdaAlgorithm(event)
+                val correctedAzimuth = doSomdaAlgorithm(event)
+                callback?.onSomdaChanged(correctedAzimuth)
             }
 
             override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
@@ -35,8 +36,6 @@ class Somda(private val context: Context) {
         DirectionSensors.startSensorListener(
             sensorManager!!, sensorEventListener as SensorEventListener
         )
-
-        callback?.onSomdaChanged(42.0F)
     }
 
     fun stop() {
