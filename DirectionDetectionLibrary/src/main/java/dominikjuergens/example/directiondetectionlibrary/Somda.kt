@@ -5,6 +5,10 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import java.util.*
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 class Somda(private val context: Context) {
 
@@ -15,7 +19,11 @@ class Somda(private val context: Context) {
     private var azimuth: Float = 0F
     private var pitch: Float = 0F
     private var roll: Float = 0F
-    private var zAcc: Float = 0F
+
+    private val zAccData = LinkedList<Float>()
+    private val sensorSamplingFrequency = (1/0.06) //every 60ms --> 16.67Hz
+    private val windowSize = (1.6 * sensorSamplingFrequency).toInt() //1.6s window size
+    private val threshold = 2.3 //2.3m/s^2
 
     fun start(onInteractionListener: SomdaListener) {
         callback = onInteractionListener
@@ -61,7 +69,8 @@ class Somda(private val context: Context) {
         refreshSensorValues(event)
         //roll correction
         val correctedAzimuth = rollCorrection()
-        //TODO windowed peak algorithm for further correction
+        val zAccPeak = findPeak()
+        //TODO add or substract 180 to correctedAzimuth according to zAccPeak
         return 42F
     }
 
@@ -72,16 +81,19 @@ class Somda(private val context: Context) {
             pitch = eulerAngles.pitch
             roll = eulerAngles.roll
         } else if (event.sensor.type == Sensor.TYPE_LINEAR_ACCELERATION) { //get linear z-Axis Acceleration
-            zAcc = DirectionSensors.getZAcceleration(event)
+            val zAcc = DirectionSensors.getZAcceleration(event)
+            //add the newest value to the list for the windowed peak algorithm
+            zAccData.addLast(zAcc)
+
+            //ensures, that the data list only contains the values inside the 1.6s window
+            if(zAccData.size > windowSize) {
+                zAccData.removeFirst()
+            }
         }
     }
 
     private fun rollCorrection(): Float {
-        if (pitch < 0) {
-            return (calculateAngle(azimuth + roll))
-        } else { // (pitch >= 0)
-            return (calculateAngle(azimuth - roll))
-        }
+        return calculateAngle(azimuth + if (pitch < 0) roll else -roll)
     }
 
     /**
@@ -90,5 +102,39 @@ class Somda(private val context: Context) {
      */
     private fun calculateAngle(angle: Float): Float {
         return angle % 360
+    }
+
+    /**
+     * windowed peak algorithm
+     */
+    private fun findPeak(): Float {
+        // Check the input data and window size
+        if (zAccData.isEmpty()) {
+            throw IllegalArgumentException("Invalid input data")
+        }
+
+        // Keep track of the current peak
+        var peak = 0.0F
+        var peakIndex = -1
+
+        // Iterate over the data and find the peak
+        val window = zAccData
+        //transform values in window to their absolute values
+        for(i in 0 until window.size) {
+            window[i] = abs(window[i])
+        }
+        //find index of max value
+        for (i in 0 until zAccData.size) {
+            // Update the peak if a larger value is found
+            if (window[i] > peak && window[i] > threshold) {
+                peak = window[i]
+                peakIndex = i
+            }
+        }
+        if(peakIndex == -1) {
+            return 0.0F
+        } else {
+            return zAccData[peakIndex]
+        }
     }
 }
