@@ -11,6 +11,7 @@ abstract class MainActivity : AppCompatActivity(), Somda.SomdaListener {
 
         val s = Somda(this)
         s.start(this)
+        //TODO Button to stop Somda (s.stop())
     }
 
     override fun onSomdaChanged(degree: Float) {
