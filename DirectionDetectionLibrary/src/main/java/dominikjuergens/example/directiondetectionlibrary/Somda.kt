@@ -70,8 +70,13 @@ class Somda(private val context: Context) {
         //roll correction
         val correctedAzimuth = rollCorrection()
         val zAccPeak = findPeak()
-        //TODO add or substract 180 to correctedAzimuth according to zAccPeak
-        return 42F
+        var finalAzimuth = 0F
+        if((pitch < 0 && zAccPeak < 0) || (pitch > 0 && zAccPeak > 0)) {
+            finalAzimuth = correctedAzimuth
+        } else if((pitch < 0 && zAccPeak > 0) || (pitch > 0 && zAccPeak < 0)) {
+            finalAzimuth = calculateAngle(correctedAzimuth + 180)
+        }
+        return finalAzimuth
     }
 
     private fun refreshSensorValues(event: SensorEvent) {
