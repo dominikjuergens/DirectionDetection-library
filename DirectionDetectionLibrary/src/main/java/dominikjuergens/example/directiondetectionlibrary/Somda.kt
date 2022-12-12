@@ -61,8 +61,7 @@ class Somda(private val context: Context) {
     }
 
     /**
-     * takes the fragments sensorManager, the fragment as the sensorEventListener and the
-     * sensorEvent from the onSensorChanged function
+     * takes the sensorEvent from the onSensorChanged function and does the somda algorithm
      */
     fun doSomdaAlgorithm(event: SensorEvent): Float {
         //get sensor values
