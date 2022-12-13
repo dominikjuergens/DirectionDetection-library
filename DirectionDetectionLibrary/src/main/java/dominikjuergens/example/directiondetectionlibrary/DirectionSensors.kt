@@ -16,7 +16,7 @@ class DirectionSensors {
          * need to call this function to register the rotation and accelerometer sensor needed for
          * somda
          */
-        fun startSensorListener(mSensorManager: SensorManager, sensorEventListener: SensorEventListener) {
+        fun startSomdaSensorListener(mSensorManager: SensorManager, sensorEventListener: SensorEventListener) {
             rotVecSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
             accSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)
             if(rotVecSensor == null) {
@@ -33,9 +33,17 @@ class DirectionSensors {
         /**
          * need to call this function to unregister the rotation and accelerometer sensor after use
          */
-        fun stopSensorListener(mSensorManager: SensorManager, sensorEventListener: SensorEventListener) {
+        fun stopSomdaSensorListener(mSensorManager: SensorManager, sensorEventListener: SensorEventListener) {
             mSensorManager.unregisterListener(sensorEventListener, rotVecSensor)
             mSensorManager.unregisterListener(sensorEventListener, accSensor)
+        }
+
+        fun startGPSDirectionListener(mSensorManager: SensorManager, sensorEventListener: SensorEventListener) {
+
+        }
+
+        fun stopGPSDirectionListener(mSensorManager: SensorManager, sensorEventListener: SensorEventListener) {
+
         }
 
         /**

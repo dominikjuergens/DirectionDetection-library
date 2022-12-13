@@ -7,8 +7,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import java.util.*
 import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
 
 class Somda(private val context: Context) {
 
@@ -41,13 +39,13 @@ class Somda(private val context: Context) {
             }
         }
 
-        DirectionSensors.startSensorListener(
+        DirectionSensors.startSomdaSensorListener(
             sensorManager!!, sensorEventListener as SensorEventListener
         )
     }
 
     fun stop() {
-        DirectionSensors.stopSensorListener(
+        DirectionSensors.stopSomdaSensorListener(
             sensorManager!!,
             sensorEventListener as SensorEventListener
         )
