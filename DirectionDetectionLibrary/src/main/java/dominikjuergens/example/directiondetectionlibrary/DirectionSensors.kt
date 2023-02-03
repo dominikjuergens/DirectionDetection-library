@@ -12,6 +12,10 @@ class DirectionSensors {
         private var rotVecSensor: Sensor? = null
         private var accSensor: Sensor? = null
 
+        private var azimuth = 0F
+        private var pitch = 0F
+        private var roll = 0F
+
         /**
          * need to call this function to register the rotation and accelerometer sensor needed for
          * somda
@@ -67,9 +71,9 @@ class DirectionSensors {
             //Calculate the orientations with the rotation matrix
             SensorManager.getOrientation(rotMat, orientation)
 
-            val azimuth = Math.toDegrees(orientation[0].toDouble()).toFloat()
-            val pitch = Math.toDegrees(orientation[1].toDouble()).toFloat()
-            val roll = Math.toDegrees(orientation[2].toDouble()).toFloat()
+            azimuth = Math.toDegrees(orientation[0].toDouble()).toFloat()
+            pitch = Math.toDegrees(orientation[1].toDouble()).toFloat()
+            roll = Math.toDegrees(orientation[2].toDouble()).toFloat()
 
             //return the three euler angles
             return EulerAngles(azimuth, pitch, roll)

@@ -14,7 +14,7 @@ class Somda(private val context: Context) {
     private lateinit var sensorEventListener: SensorEventListener
     private lateinit var sensorManager: SensorManager
 
-    private var azimuth: Float = 0F
+    var azimuth: Float = 0F
     private var pitch: Float = 0F
     private var roll: Float = 0F
 
