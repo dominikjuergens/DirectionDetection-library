@@ -1,7 +1,6 @@
 package dominikjuergens.example.directiondetectionlibrary
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Sensor
@@ -10,13 +9,12 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 
 class GpsDirection (private val context: Context) {
 
-    private var callback: GpsDirectionListener? = null
-    private var sensorEventListener: SensorEventListener? = null
-    private var sensorManager: SensorManager? = null
+    private lateinit var callback: GpsDirectionListener
+    private lateinit var sensorEventListener: SensorEventListener
+    private lateinit var sensorManager: SensorManager
 
     fun start(onInteractionListener: GpsDirectionListener) {
 
@@ -32,7 +30,7 @@ class GpsDirection (private val context: Context) {
         sensorEventListener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent) {
                 val gpsAzimuth = doGpsDirectionDetection(event)
-                callback?.onGPSDirectionChanged(gpsAzimuth)
+                callback.onGPSDirectionChanged(gpsAzimuth)
             }
 
             override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
@@ -41,11 +39,9 @@ class GpsDirection (private val context: Context) {
         }
 
         DirectionSensors.startGPSDirectionListener(
-            sensorManager!!, sensorEventListener as SensorEventListener
+            sensorManager, sensorEventListener
         )
     }
-
-    private val requestCodeGpsPermission = 1
 
     private fun checkGpsPermission(): Boolean {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -68,12 +64,9 @@ class GpsDirection (private val context: Context) {
 
     fun stop() {
         DirectionSensors.stopGPSDirectionListener(
-            sensorManager!!,
-            sensorEventListener as SensorEventListener
+            sensorManager,
+            sensorEventListener
         )
-        callback = null
-        sensorManager = null
-        sensorEventListener = null
     }
 
     interface GpsDirectionListener {

@@ -10,9 +10,9 @@ import kotlin.math.abs
 
 class Somda(private val context: Context) {
 
-    private var callback: SomdaListener? = null
-    private var sensorEventListener: SensorEventListener? = null
-    private var sensorManager: SensorManager? = null
+    private lateinit var callback: SomdaListener
+    private lateinit var sensorEventListener: SensorEventListener
+    private lateinit var sensorManager: SensorManager
 
     private var azimuth: Float = 0F
     private var pitch: Float = 0F
@@ -31,7 +31,7 @@ class Somda(private val context: Context) {
         sensorEventListener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent) {
                 val correctedAzimuth = doSomdaAlgorithm(event)
-                callback?.onSomdaChanged(correctedAzimuth)
+                callback.onSomdaChanged(correctedAzimuth)
             }
 
             override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
@@ -40,18 +40,15 @@ class Somda(private val context: Context) {
         }
 
         DirectionSensors.startSomdaSensorListener(
-            sensorManager!!, sensorEventListener as SensorEventListener
+            sensorManager, sensorEventListener
         )
     }
 
     fun stop() {
         DirectionSensors.stopSomdaSensorListener(
-            sensorManager!!,
-            sensorEventListener as SensorEventListener
+            sensorManager,
+            sensorEventListener
         )
-        callback = null
-        sensorManager = null
-        sensorEventListener = null
     }
 
     interface SomdaListener {
