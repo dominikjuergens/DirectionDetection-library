@@ -133,10 +133,10 @@ class Somda(private val context: Context) {
                 peakIndex = i
             }
         }
-        if(peakIndex == -1) {
-            return 0.0F
+        return if(peakIndex == -1) {
+            0.0F
         } else {
-            return zAccData[peakIndex]
+            zAccData[peakIndex]
         }
     }
 }
