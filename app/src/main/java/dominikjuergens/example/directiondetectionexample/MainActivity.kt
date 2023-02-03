@@ -8,8 +8,8 @@ import dominikjuergens.example.directiondetectionlibrary.Somda
 
 abstract class MainActivity : AppCompatActivity(), Somda.SomdaListener {
 
-    private lateinit var value1Text: TextView
-    private lateinit var value2Text: TextView
+    private lateinit var rawAzimuth: TextView
+    private lateinit var somdaAzimuth: TextView
     private lateinit var stopButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,8 +20,8 @@ abstract class MainActivity : AppCompatActivity(), Somda.SomdaListener {
         s.start(this)
         //TODO Button to stop Somda (s.stop())
 
-        value1Text = findViewById(R.id.rawAzimuth)
-        value2Text = findViewById(R.id.somdaAzimuth)
+        rawAzimuth = findViewById(R.id.rawAzimuth)
+        somdaAzimuth = findViewById(R.id.somdaAzimuth)
         stopButton = findViewById(R.id.stop_button)
 
         stopButton.setOnClickListener {
