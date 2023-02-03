@@ -109,7 +109,7 @@ class Somda(private val context: Context) {
     private fun findPeak(): Float {
         // Check the input data and window size
         if (zAccData.isEmpty()) {
-            throw IllegalArgumentException("Invalid input data")
+            return 0.0F
         }
 
         // Keep track of the current peak

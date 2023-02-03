@@ -6,7 +6,7 @@ import android.widget.Button
 import android.widget.TextView
 import dominikjuergens.example.directiondetectionlibrary.Somda
 
-abstract class MainActivity : AppCompatActivity(), Somda.SomdaListener {
+class MainActivity : AppCompatActivity(), Somda.SomdaListener {
 
     private lateinit var rawAzimuth: TextView
     private lateinit var somdaAzimuth: TextView
