@@ -8,6 +8,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
@@ -20,7 +21,9 @@ class GpsDirection (private val context: Context) {
     fun start(onInteractionListener: GpsDirectionListener) {
 
         //request necessary permissions
-        requestGpsPermission()
+        if(!checkGpsPermission()){
+            return
+        }
 
         callback = onInteractionListener
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -44,19 +47,15 @@ class GpsDirection (private val context: Context) {
 
     private val requestCodeGpsPermission = 1
 
-    private fun requestGpsPermission() {
-        val activity = context as Activity
-
-        val coarseLocationPermission = Manifest.permission.ACCESS_COARSE_LOCATION
-        val fineLocationPermission = Manifest.permission.ACCESS_FINE_LOCATION
-
-        if (ContextCompat.checkSelfPermission(context, coarseLocationPermission) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(context, fineLocationPermission) != PackageManager.PERMISSION_GRANTED) {
-            // Permission has not been granted, request it
-            ActivityCompat.requestPermissions(activity, arrayOf(coarseLocationPermission, fineLocationPermission), requestCodeGpsPermission)
-        } else {
-            // Permission has already been granted, we can access the GPS
+    private fun checkGpsPermission(): Boolean {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.e("GPS permission", "GPS permission not granted")
+            throw Exception("GPS permission not granted")
         }
+
+        return true
     }
 
 

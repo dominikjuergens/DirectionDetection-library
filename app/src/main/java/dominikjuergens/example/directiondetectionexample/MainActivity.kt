@@ -18,7 +18,6 @@ abstract class MainActivity : AppCompatActivity(), Somda.SomdaListener {
 
         val s = Somda(this)
         s.start(this)
-        //TODO Button to stop Somda (s.stop())
 
         rawAzimuth = findViewById(R.id.rawAzimuth)
         somdaAzimuth = findViewById(R.id.somdaAzimuth)
@@ -31,6 +30,6 @@ abstract class MainActivity : AppCompatActivity(), Somda.SomdaListener {
     }
 
     override fun onSomdaChanged(degree: Float) {
-        TODO("Not yet implemented")
+        somdaAzimuth.text = degree.toString()
     }
 }
