@@ -76,7 +76,7 @@ class Somda(private val context: Context) {
     private fun refreshSensorValues(event: SensorEvent) {
         if (event.sensor.type == Sensor.TYPE_ROTATION_VECTOR) { //get euler angles
             val eulerAngles = DirectionSensors.getEulerAngles(event)
-            azimuth = eulerAngles.azimuth
+            azimuth = calculateAngle(eulerAngles.azimuth)
             pitch = eulerAngles.pitch
             roll = eulerAngles.roll
         } else if (event.sensor.type == Sensor.TYPE_LINEAR_ACCELERATION) { //get linear z-Axis Acceleration
@@ -100,7 +100,7 @@ class Somda(private val context: Context) {
      * after the addition of two angles
      */
     private fun calculateAngle(angle: Float): Float {
-        return angle % 360
+        return angle.mod(360F)
     }
 
     /**

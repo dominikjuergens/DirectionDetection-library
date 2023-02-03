@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener {
     }
 
     override fun onSomdaChanged(degree: Float) {
-        rawAzimuth.text = s.azimuth.toString()
+        rawAzimuth.text = s.azimuth.mod(360F).toString()
         somdaAzimuth.text = degree.toString()
     }
 }
