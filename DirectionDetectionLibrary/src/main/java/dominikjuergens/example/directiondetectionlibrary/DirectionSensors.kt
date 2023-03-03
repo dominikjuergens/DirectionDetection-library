@@ -1,9 +1,12 @@
 package dominikjuergens.example.directiondetectionlibrary
 
+import android.annotation.SuppressLint
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.location.LocationListener
+import android.location.LocationManager
 
 class DirectionSensors {
     //initializes sensors needed for SOMDA
@@ -42,12 +45,14 @@ class DirectionSensors {
             mSensorManager.unregisterListener(sensorEventListener, accSensor)
         }
 
-        fun startGPSDirectionListener(mSensorManager: SensorManager, sensorEventListener: SensorEventListener) {
-
+        @SuppressLint("MissingPermission")
+        fun startGPSDirectionListener(mLocationManager: LocationManager, locationListener: LocationListener) {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
         }
 
-        fun stopGPSDirectionListener(mSensorManager: SensorManager, sensorEventListener: SensorEventListener) {
-
+        @SuppressLint("MissingPermission")
+        fun stopGPSDirectionListener(mLocationManager: LocationManager, locationListener: LocationListener) {
+            mLocationManager.removeUpdates(locationListener)
         }
 
         /**

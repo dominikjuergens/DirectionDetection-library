@@ -3,18 +3,21 @@ package dominikjuergens.example.directiondetectionlibrary
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.hardware.Sensor
-import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
 
 class GpsDirection (private val context: Context) {
 
     private lateinit var callback: GpsDirectionListener
-    private lateinit var sensorEventListener: SensorEventListener
-    private lateinit var sensorManager: SensorManager
+    private lateinit var locationListener: LocationListener
+    private lateinit var locationManager: LocationManager
+
+    private var previousLocation: Location? = null
 
     fun start(onInteractionListener: GpsDirectionListener) {
 
@@ -24,22 +27,19 @@ class GpsDirection (private val context: Context) {
         }
 
         callback = onInteractionListener
-        sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         // Create a SensorEventListener
-        sensorEventListener = object : SensorEventListener {
-            override fun onSensorChanged(event: SensorEvent) {
-                val gpsAzimuth = doGpsDirectionDetection(event)
+        locationListener = object : LocationListener {
+            override fun onLocationChanged(currentLocation: Location) {
+                val gpsAzimuth = doGpsDirectionDetection(currentLocation)
                 callback.onGPSDirectionChanged(gpsAzimuth)
             }
 
-            override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-                // Handle accuracy changes here
-            }
         }
 
         DirectionSensors.startGPSDirectionListener(
-            sensorManager, sensorEventListener
+            locationManager, locationListener
         )
     }
 
@@ -54,22 +54,26 @@ class GpsDirection (private val context: Context) {
         return true
     }
 
+    fun doGpsDirectionDetection(currentLocation: Location): Float? {
+        if (previousLocation == null) {
+            previousLocation = currentLocation
+            return null
+        }
 
+        val bearing = previousLocation?.bearingTo(currentLocation)
+        previousLocation = currentLocation
 
-
-
-    private fun doGpsDirectionDetection(event: SensorEvent): Float {
-        TODO("Not yet implemented")
+        return bearing
     }
 
     fun stop() {
         DirectionSensors.stopGPSDirectionListener(
-            sensorManager,
-            sensorEventListener
+            locationManager,
+            locationListener
         )
     }
 
     interface GpsDirectionListener {
-        fun onGPSDirectionChanged(degree: Float)
+        fun onGPSDirectionChanged(gpsAzimuth: Float?)
     }
 }
