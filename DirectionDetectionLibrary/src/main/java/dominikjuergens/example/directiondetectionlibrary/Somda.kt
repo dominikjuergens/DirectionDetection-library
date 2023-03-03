@@ -10,7 +10,7 @@ import kotlin.math.abs
 
 class Somda(private val context: Context) {
 
-    private lateinit var callback: SomdaListener
+    private var callback: SomdaListener? = null
     private lateinit var sensorEventListener: SensorEventListener
     private lateinit var sensorManager: SensorManager
 
@@ -31,7 +31,7 @@ class Somda(private val context: Context) {
         sensorEventListener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent) {
                 val correctedAzimuth = doSomdaAlgorithm(event)
-                callback.onSomdaChanged(correctedAzimuth)
+                callback?.onSomdaChanged(correctedAzimuth)
             }
 
             override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
@@ -80,6 +80,7 @@ class Somda(private val context: Context) {
             pitch = eulerAngles.pitch
             roll = eulerAngles.roll
         } else if (event.sensor.type == Sensor.TYPE_LINEAR_ACCELERATION) { //get linear z-Axis Acceleration
+            println(event.values.joinToString { "$it " })
             val zAcc = DirectionSensors.getZAcceleration(event)
             //add the newest value to the list for the windowed peak algorithm
             zAccData.addLast(zAcc)

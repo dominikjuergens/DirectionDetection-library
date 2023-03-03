@@ -28,7 +28,13 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener {
         stopButton = findViewById(R.id.stop_button)
 
         stopButton.setOnClickListener {
-            s.stop()
+            if(stopButton.text.toString() == "Stop") {
+                s.stop()
+                stopButton.text = "Start"
+            } else if (stopButton.text.toString() == "Start"){
+                s.start(this)
+                stopButton.text = "Stop"
+            }
         }
 
     }
