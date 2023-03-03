@@ -1,9 +1,13 @@
 package dominikjuergens.example.directiondetectionexample
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import dominikjuergens.example.directiondetectionlibrary.GpsDirection
 import dominikjuergens.example.directiondetectionlibrary.Somda
 import java.io.File
@@ -36,7 +40,20 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
         somda = Somda(this)
         somda.start(this)
         gpsDirection = GpsDirection(this)
-        gpsDirection?.start(this)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            //Permission already granted
+            gpsDirection?.start(this)
+        } else {
+            // Permission is not granted
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                1
+            )
+            gpsDirection?.start(this)
+        }
 
         // Views setup
         rawAzimuth = findViewById(R.id.rawAzimuth)
