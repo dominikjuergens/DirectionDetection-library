@@ -75,6 +75,6 @@ class GpsDirectionKalman(private val context: Context, private val maxLocations:
     }
 
     interface KalmanListener {
-        fun onKalmanChanged(gpsAzimuth: Float)
+        fun onKalmanChanged(kalmanAzimuth: Float)
     }
 }
