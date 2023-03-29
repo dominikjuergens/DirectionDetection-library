@@ -3,39 +3,31 @@ package dominikjuergens.example.directiondetectionlibrary
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
 
-class GpsDirection (private val context: Context) {
+class GpsDirection(private val context: Context, private val maxLocations: Int = 10) {
 
     private lateinit var callback: GpsDirectionListener
     private lateinit var locationListener: LocationListener
     private lateinit var locationManager: LocationManager
 
-    private var previousLocation: Location? = null
+    private val locationList: MutableList<Location> = mutableListOf()
 
     fun start(onInteractionListener: GpsDirectionListener) {
-
-        //request necessary permissions
-        if(!checkGpsPermission()){
+        if (!checkGpsPermission()) {
             return
         }
 
         callback = onInteractionListener
         locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        // Create a SensorEventListener
-        locationListener = object : LocationListener {
-            override fun onLocationChanged(currentLocation: Location) {
-                val gpsAzimuth = doGpsDirectionDetection(currentLocation)
-                callback.onGPSDirectionChanged(gpsAzimuth)
-            }
-
+        locationListener = LocationListener { currentLocation ->
+            val gpsAzimuth = doGpsDirectionDetection(currentLocation)
+            gpsAzimuth?.let { callback.onGPSDirectionChanged(it) }
         }
 
         DirectionSensors.startGPSDirectionListener(
@@ -55,15 +47,20 @@ class GpsDirection (private val context: Context) {
     }
 
     fun doGpsDirectionDetection(currentLocation: Location): Float? {
-        if (previousLocation == null) {
-            previousLocation = currentLocation
+        if (locationList.size >= maxLocations) {
+            locationList.removeAt(0)
+        }
+        locationList.add(currentLocation)
+
+        if (locationList.size < 2) {
             return null
         }
 
-        val bearing = previousLocation?.bearingTo(currentLocation)
-        previousLocation = currentLocation
+        val sumBearings = locationList.mapIndexed { index, location ->
+            location.bearingTo(locationList[index + 1]).mod(360F)
+        }.sum()
 
-        return bearing?.mod(360F)
+        return sumBearings / (locationList.size - 1)
     }
 
     fun stop() {
@@ -74,6 +71,6 @@ class GpsDirection (private val context: Context) {
     }
 
     interface GpsDirectionListener {
-        fun onGPSDirectionChanged(gpsAzimuth: Float?)
+        fun onGPSDirectionChanged(gpsAzimuth: Float)
     }
 }
