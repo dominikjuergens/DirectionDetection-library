@@ -56,7 +56,7 @@ class GpsDirection(private val context: Context, private val maxLocations: Int =
             return null
         }
 
-        val sumBearings = locationList.mapIndexed { index, location ->
+        val sumBearings = locationList.subList(0, locationList.size - 1).mapIndexed { index, location ->
             location.bearingTo(locationList[index + 1]).mod(360F)
         }.sum()
 
