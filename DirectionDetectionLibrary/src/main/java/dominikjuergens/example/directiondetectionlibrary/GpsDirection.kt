@@ -63,7 +63,7 @@ class GpsDirection (private val context: Context) {
         val bearing = previousLocation?.bearingTo(currentLocation)
         previousLocation = currentLocation
 
-        return bearing
+        return bearing?.mod(360F)
     }
 
     fun stop() {
