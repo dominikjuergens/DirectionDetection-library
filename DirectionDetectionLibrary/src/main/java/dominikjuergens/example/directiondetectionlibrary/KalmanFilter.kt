@@ -1,14 +1,20 @@
 package dominikjuergens.example.directiondetectionlibrary
 
-class KalmanFilter(private val r: Float, private val q: Float) {
-    private var p = 1f
-    private var x = 0f
-    private var k = 0f
+class KalmanFilter(private val measurementUncertainty: Float) {
 
-    fun filter(z: Float): Float {
-        k = p / (p + r)
-        x += k * (z - x)
-        p = (1 - k) * p + q
-        return x
+    //error covariance
+    private var estimateUncertainty = 1f
+
+    //current estimation (filtered bearing value)
+    private var currentEstimate = 0f
+
+    //weight versus previous estimation
+    private var kalmanGain = 0f
+
+    fun filter(rawBearing: Float): Float {
+        kalmanGain = estimateUncertainty / (estimateUncertainty + measurementUncertainty)
+        currentEstimate += kalmanGain * (rawBearing - currentEstimate)
+        estimateUncertainty *= (1 - kalmanGain)
+        return currentEstimate
     }
 }
