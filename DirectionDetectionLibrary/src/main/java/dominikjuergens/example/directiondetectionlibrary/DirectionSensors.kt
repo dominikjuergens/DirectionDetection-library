@@ -55,6 +55,18 @@ class DirectionSensors {
             mLocationManager.removeUpdates(locationListener)
         }
 
+        @SuppressLint("MissingPermission")
+        fun startKalmanListener(mLocationManager: LocationManager, locationListener: LocationListener) {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
+        }
+
+        @SuppressLint("MissingPermission")
+        fun stopKalmanListener(mLocationManager: LocationManager, locationListener: LocationListener) {
+            mLocationManager.removeUpdates(locationListener)
+        }
+
+
+
         /**
          * returns the three euler angles as a Triple
          * you need to input the event from the onSensorChanged function of the Fragment where the

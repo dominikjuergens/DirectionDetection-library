@@ -9,13 +9,14 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import dominikjuergens.example.directiondetectionlibrary.GpsDirection
+import dominikjuergens.example.directiondetectionlibrary.GpsDirectionKalman
 import dominikjuergens.example.directiondetectionlibrary.Somda
 import java.io.File
 import java.io.FileWriter
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsDirectionListener {
+class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsDirectionListener, GpsDirectionKalman.KalmanListener {
 
     // Views
     private lateinit var rawAzimuth: TextView
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
     private lateinit var stopButton: Button
     private lateinit var recordButton: Button
     private var gps: TextView? = null
+    private var gpsKalman: TextView? = null
 
     // Values
     private var writer: FileWriter? = null
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
     // Sensor
     private lateinit var somda: Somda
     private var gpsDirection: GpsDirection? = null
+    private var gpsDirectionKalman: GpsDirectionKalman? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,11 +43,13 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
         somda = Somda(this)
         somda.start(this)
         gpsDirection = GpsDirection(this)
+        gpsDirectionKalman = GpsDirectionKalman(this)
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED
         ) {
             //Permission already granted
             gpsDirection?.start(this)
+            gpsDirectionKalman?.start(this)
         } else {
             // Permission is not granted
             ActivityCompat.requestPermissions(
@@ -53,6 +58,7 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
                 1
             )
             gpsDirection?.start(this)
+            gpsDirectionKalman?.start(this)
         }
 
         // Views setup
@@ -61,16 +67,19 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
         stopButton = findViewById(R.id.stop_button)
         recordButton = findViewById(R.id.record_button)
         gps = findViewById(R.id.gps)
+        gpsKalman = findViewById(R.id.gpsKalman)
 
         // Stop button
         stopButton.setOnClickListener {
             if (stopButton.text.toString() == "Stop") {
                 somda.stop()
                 gpsDirection?.stop()
+                gpsDirectionKalman?.stop()
                 stopButton.text = "Start"
             } else if (stopButton.text.toString() == "Start") {
                 somda.start(this)
                 gpsDirection?.start(this)
+                gpsDirectionKalman?.start(this)
                 stopButton.text = "Stop"
             }
         }
@@ -97,7 +106,11 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
         writer?.append("${format.format(Date())};${rawAzimuth.text};${somdaAzimuth.text}\n")
     }
 
-    override fun onGPSDirectionChanged(gpsAzimuth: Float?) {
+    override fun onGPSDirectionChanged(gpsAzimuth: Float) {
         gps?.text = gpsAzimuth.toString()
+    }
+
+    override fun onKalmanChanged(kalmanAzimuth: Float) {
+        gpsKalman?.text = kalmanAzimuth.toString()
     }
 }
