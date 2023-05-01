@@ -16,7 +16,7 @@ class GpsDirectionKalman(private val context: Context, private val maxLocations:
     private lateinit var locationManager: LocationManager
 
     private val locationList: MutableList<Location> = mutableListOf()
-    private val kalmanFilter = KalmanFilter(measurementUncertainty = 10f)
+    private val kalmanFilter = KalmanFilter(processUncertainty = 10f, initialEstimateUncertainty = 1f)
 
     fun start(onInteractionListener: KalmanListener) {
         if (!checkGpsPermission()) {
