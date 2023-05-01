@@ -9,7 +9,7 @@ import android.location.LocationManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
 
-class GpsDirectionKalman(private val context: Context, private val maxLocations: Int = 10) {
+class GpsDirectionKalman(private val context: Context, private val maxLocations: Int = 10, private val minDistanceMeters: Float = 2f) {
 
     private lateinit var callback: KalmanListener
     private lateinit var locationListener: LocationListener
@@ -48,10 +48,18 @@ class GpsDirectionKalman(private val context: Context, private val maxLocations:
     }
 
     fun doGpsKalman(currentLocation: Location): Float? {
-        if (locationList.size >= maxLocations) {
-            locationList.removeAt(0)
+        if (locationList.isNotEmpty()) {
+            val lastLocation = locationList.last()
+            val distance = lastLocation.distanceTo(currentLocation)
+            if (distance >= minDistanceMeters) {
+                if (locationList.size >= maxLocations) {
+                    locationList.removeAt(0)
+                }
+                locationList.add(currentLocation)
+            }
+        } else {
+            locationList.add(currentLocation)
         }
-        locationList.add(currentLocation)
 
         if (locationList.size < 2) {
             return null

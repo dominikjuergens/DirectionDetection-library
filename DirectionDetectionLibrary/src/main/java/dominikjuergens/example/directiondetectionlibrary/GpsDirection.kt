@@ -9,7 +9,7 @@ import android.location.LocationManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
 
-class GpsDirection(private val context: Context, private val maxLocations: Int = 10, private val minDistanceMeters: Float = 10f) {
+class GpsDirection(private val context: Context, private val maxLocations: Int = 10, private val minDistanceMeters: Float = 2f) {
 
     private lateinit var callback: GpsDirectionListener
     private lateinit var locationListener: LocationListener
