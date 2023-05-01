@@ -15,6 +15,9 @@ class GpsDirection(private val context: Context, private val maxLocations: Int =
     private lateinit var locationListener: LocationListener
     private lateinit var locationManager: LocationManager
 
+    private var latitude: Double? = null
+    private var longitude: Double? = null
+
     private val locationList: MutableList<Location> = mutableListOf()
 
     fun start(onInteractionListener: GpsDirectionListener) {
@@ -27,6 +30,8 @@ class GpsDirection(private val context: Context, private val maxLocations: Int =
 
         locationListener = LocationListener { currentLocation ->
             val gpsAzimuth = doGpsDirectionDetection(currentLocation)
+            latitude = currentLocation.latitude
+            longitude = currentLocation.longitude
             gpsAzimuth?.let { callback.onGPSDirectionChanged(it) }
         }
 
@@ -76,6 +81,14 @@ class GpsDirection(private val context: Context, private val maxLocations: Int =
             locationManager,
             locationListener
         )
+    }
+
+    fun getLatitude(location: Location): Double? {
+        return this.latitude
+    }
+
+    fun getLongitude(location: Location): Double? {
+        return this.longitude
     }
 
     interface GpsDirectionListener {
