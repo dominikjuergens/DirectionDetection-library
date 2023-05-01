@@ -66,9 +66,9 @@ class Somda(private val context: Context) {
         val zAccPeak = findPeak()
         var finalAzimuth = 0.0F
         if((pitch < 0 && zAccPeak < 0) || (pitch > 0 && zAccPeak > 0)) {
-            finalAzimuth = correctedAzimuth
-        } else if((pitch < 0 && zAccPeak > 0) || (pitch > 0 && zAccPeak < 0)) {
             finalAzimuth = calculateAngle(correctedAzimuth + 180)
+        } else if((pitch < 0 && zAccPeak > 0) || (pitch > 0 && zAccPeak < 0)) {
+            finalAzimuth = correctedAzimuth
         }
         return finalAzimuth
     }
