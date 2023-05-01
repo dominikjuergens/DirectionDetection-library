@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
                 recordButton.text = "Stop Recording"
                 val file = File(this.filesDir, "output.csv")
                 writer = FileWriter(file, true)
-                writer?.append("Time;Azimuth;After SOMDA")
+                writer?.append("Time;Azimuth;After SOMDA;GPS;After Kalman")
             } else if (recordButton.text.toString() == "Stop Recording") {
                 recordButton.text = "Start Recording"
                 writer?.close()
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
     override fun onSomdaChanged(degree: Float) {
         rawAzimuth.text = somda.azimuth.mod(360F).toString()
         somdaAzimuth.text = degree.toString()
-        writer?.append("${format.format(Date())};${rawAzimuth.text};${somdaAzimuth.text}\n")
+        writer?.append("${format.format(Date())};${rawAzimuth.text};${somdaAzimuth.text};${gps?.text};${gpsKalman?.text}\n")
     }
 
     override fun onGPSDirectionChanged(gpsAzimuth: Float) {
