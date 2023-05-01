@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
     override fun onSomdaChanged(degree: Float) {
         rawAzimuth.text = somda.azimuth.mod(360F).toString()
         somdaAzimuth.text = degree.toString()
-        writer?.append("${format.format(Date())};${rawAzimuth.text};${somdaAzimuth.text};${gps?.text};${gpsKalman?.text}\n")
+        writer?.append("${format.format(Date())};${rawAzimuth.text};${somdaAzimuth.text};${gps?.text};${gpsKalman?.text};${gpsDirection?.getLatitude()};${gpsDirection?.getLongitude()}\n")
     }
 
     override fun onGPSDirectionChanged(gpsAzimuth: Float) {

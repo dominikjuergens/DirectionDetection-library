@@ -83,11 +83,11 @@ class GpsDirection(private val context: Context, private val maxLocations: Int =
         )
     }
 
-    fun getLatitude(location: Location): Double? {
+    fun getLatitude(): Double? {
         return this.latitude
     }
 
-    fun getLongitude(location: Location): Double? {
+    fun getLongitude(): Double? {
         return this.longitude
     }
 
