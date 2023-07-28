@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
                 recordButton.text = "Stop Recording"
                 val file = File(this.filesDir, "output.csv")
                 writer = FileWriter(file, true)
-                writer?.append("Time;Azimuth;After SOMDA;GPS;After Kalman;Latitude;Longitude\n")
+                writer?.append("Time;Azimuth;After SOMDA;SOMDA after Kalman;GPS;GPS after Kalman;Latitude;Longitude\n")
             } else if (recordButton.text.toString() == "Stop Recording") {
                 recordButton.text = "Start Recording"
                 writer?.close()
