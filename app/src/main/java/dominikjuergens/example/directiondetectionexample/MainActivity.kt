@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
         somdaAzimuth.text = degree.toString()
         val somdaKalman = kalmanFilter.filter(degree)
         somdaKalmanAzimuth?.text = somdaKalman.toString()
-        writer?.append("${format.format(Date())};${rawAzimuth.text};${somdaAzimuth.text};${gps?.text};${gpsKalman?.text};${gpsDirection?.getLatitude()};${gpsDirection?.getLongitude()}\n")
+        writer?.append("${format.format(Date())};${rawAzimuth.text};${somdaAzimuth.text};${somdaKalmanAzimuth?.text};${gps?.text};${gpsKalman?.text};${gpsDirection?.getLatitude()};${gpsDirection?.getLongitude()}\n")
     }
 
     override fun onGPSDirectionChanged(gpsAzimuth: Float) {
