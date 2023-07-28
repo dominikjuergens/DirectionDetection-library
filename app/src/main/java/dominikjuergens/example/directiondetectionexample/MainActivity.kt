@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import dominikjuergens.example.directiondetectionlibrary.GpsDirection
 import dominikjuergens.example.directiondetectionlibrary.GpsDirectionKalman
+import dominikjuergens.example.directiondetectionlibrary.KalmanFilter
 import dominikjuergens.example.directiondetectionlibrary.Somda
 import java.io.File
 import java.io.FileWriter
@@ -25,6 +26,8 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
     private lateinit var recordButton: Button
     private var gps: TextView? = null
     private var gpsKalman: TextView? = null
+    private var somdaKalmanAzimuth: TextView? = null
+    private val kalmanFilter = KalmanFilter(processUncertainty = 10f, initialEstimateUncertainty = 1f)
 
     // Values
     private var writer: FileWriter? = null
@@ -103,6 +106,8 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
     override fun onSomdaChanged(degree: Float) {
         rawAzimuth.text = somda.azimuth.mod(360F).toString()
         somdaAzimuth.text = degree.toString()
+        val somdaKalman = kalmanFilter.filter(degree)
+        somdaKalmanAzimuth?.text = somdaKalman.toString()
         writer?.append("${format.format(Date())};${rawAzimuth.text};${somdaAzimuth.text};${gps?.text};${gpsKalman?.text};${gpsDirection?.getLatitude()};${gpsDirection?.getLongitude()}\n")
     }
 
