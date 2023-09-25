@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
     private var gpsKalman: TextView? = null
     private var somdaKalmanAzimuth: TextView? = null
     private val kalmanFilter = KalmanFilter(processUncertainty = 10f, initialEstimateUncertainty = 1f)
+    private var somdaKalman: Float? = null
 
     // Values
     private var writer: FileWriter? = null
@@ -67,6 +68,7 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
         // Views setup
         rawAzimuth = findViewById(R.id.rawAzimuth)
         somdaAzimuth = findViewById(R.id.somdaAzimuth)
+        somdaKalmanAzimuth = findViewById(R.id.somdaKalmanAzimuth)
         stopButton = findViewById(R.id.stop_button)
         recordButton = findViewById(R.id.record_button)
         gps = findViewById(R.id.gps)
@@ -91,9 +93,9 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
         recordButton.setOnClickListener {
             if (recordButton.text.toString() == "Start Recording") {
                 recordButton.text = "Stop Recording"
-                val file = File(this.filesDir, "output.csv")
+                val file = File(this.filesDir, format.format(Date()) + "_output.csv")
                 writer = FileWriter(file, true)
-                writer?.append("Time;Azimuth;After SOMDA;SOMDA after Kalman;GPS;GPS after Kalman;Latitude;Longitude\n")
+                writer?.append("Time;Azimuth;Pitch;Roll;After SOMDA;SOMDA after Kalman;GPS;GPS after Kalman;Latitude;Longitude\n")
             } else if (recordButton.text.toString() == "Stop Recording") {
                 recordButton.text = "Start Recording"
                 writer?.close()
@@ -105,10 +107,12 @@ class MainActivity : AppCompatActivity(), Somda.SomdaListener, GpsDirection.GpsD
 
     override fun onSomdaChanged(degree: Float) {
         rawAzimuth.text = somda.azimuth.mod(360F).toString()
+        val rawPitch = somda.pitch.mod(360F).toString()
+        val rawRoll = somda.roll.mod(360F).toString()
         somdaAzimuth.text = degree.toString()
-        val somdaKalman = kalmanFilter.filter(degree)
+        somdaKalman = kalmanFilter.filter(degree)
         somdaKalmanAzimuth?.text = somdaKalman.toString()
-        writer?.append("${format.format(Date())};${rawAzimuth.text};${somdaAzimuth.text};${somdaKalmanAzimuth?.text};${gps?.text};${gpsKalman?.text};${gpsDirection?.getLatitude()};${gpsDirection?.getLongitude()}\n")
+        writer?.append("${format.format(Date())};${rawAzimuth.text};${rawPitch};${rawRoll};${somdaAzimuth.text};${somdaKalmanAzimuth?.text};${gps?.text};${gpsKalman?.text};${gpsDirection?.getLatitude()};${gpsDirection?.getLongitude()}\n")
     }
 
     override fun onGPSDirectionChanged(gpsAzimuth: Float) {

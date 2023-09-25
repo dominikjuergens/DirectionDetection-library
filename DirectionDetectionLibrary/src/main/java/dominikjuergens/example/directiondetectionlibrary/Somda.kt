@@ -15,8 +15,8 @@ class Somda(private val context: Context) {
     private lateinit var sensorManager: SensorManager
 
     var azimuth: Float = 0F
-    private var pitch: Float = 0F
-    private var roll: Float = 0F
+    var pitch: Float = 0F
+    var roll: Float = 0F
 
     private val zAccData = LinkedList<Float>()
     private val sensorSamplingFrequency = (1/0.06) //every 60ms --> 16.67Hz
